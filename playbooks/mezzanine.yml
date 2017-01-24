@@ -47,7 +47,7 @@
         - python-virtualenv
         - supervisor
     - name: check out the repository on the host
-      git: repo={{ repo_url }} dest={{ proj_path }} accept_hostkey=yes
+      git: repo={{ repo_url }} dest={{ proj_path }} accept_hostkey=yes update=no
     - name: install required python packages
       pip: name={{ item }} virtualenv={{ venv_path }}
       with_items:
@@ -57,6 +57,7 @@
         - psycopg2
         - django-compressor
         - python-memcached
+    - copy: src=files/requirements.txt dest={{ proj_path }}/{{ reqs_path }} owner=vagrant mode=0644
     - name: install requirements.txt
       pip: requirements={{ proj_path }}/{{ reqs_path }} virtualenv={{ venv_path }}
     - name: create a user
@@ -137,7 +138,7 @@
 
   handlers:
     - name: restart supervisor
-      supervisorctl: name=gunicorn_mezzanine state=restarted
+      supervisorctl: name=all state=restarted
       sudo: True
     - name: restart nginx
       service: name=nginx state=restarted
